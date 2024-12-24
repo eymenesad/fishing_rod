@@ -371,6 +371,8 @@ void enable_clocks(void) {
     	TIM6->CR1 |= 1;
     }
 }
+// reference to integration presentation page 17
+// this is for periodic (non-continuous) and efficient ADC reading with deactivation of ADC when needed, deactivating timers when not in fishing mode.
 void disable_clocks(void) {
 	if(clocks_enabled){
 	    	TIM15->CR1 &= ~(1<<0);
