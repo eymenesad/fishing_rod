@@ -99,6 +99,7 @@ void init_uart(void) {
 // Utilized PS 11 code for this init_lpuart function block
 void init_lpuart(void)
 {
+    //from PS 11
 	//Enable Clock for Power Interface.
 	RCC_APB1ENR1 |= 1 << 28;
 	// Change the regulator mode to Low-power mode.
@@ -138,6 +139,7 @@ void USART2_IRQHandler(void) { //read from bluetooth
         }
     }
 void LPUART1_IRQHandler(void) {
+//from PS 11
 // Read data from the computer.
 if ((LPUART1->ISR & (1 << 5)) != 0)
 {

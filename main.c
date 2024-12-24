@@ -202,7 +202,7 @@ void TIM15_IRQHandler(void){	// Interrupt handler for TIM15 (From PS)
 //		}
 	}
 }
-
+// from  ps 7
 void TIM6_IRQHandler(void) // NEW! ISR for TIM6
 {
 	if(TIM6->SR & (1 << 0)){
@@ -217,24 +217,25 @@ void TIM6_IRQHandler(void) // NEW! ISR for TIM6
 		}
 	}
 }
-
+// from ps 9
 void TIM7_IRQHandler(void) // NEW! ISR for TIM7
 {
+	// check if UIF flag is set
 	if(TIM7->SR & (1 << 0)){
 		TIM7->SR &= ~(1<<0);
 
 
 		//ADC1->CR &= ~(1 << 29); //Powering ADC Module
 		//ADC1->CR |= (1 << 0);
-
+		// checks if the ADC is enabled
 		ADC1->CR |= (1<<0);
 		while((ADC1->ISR & 1) == 0) {}
-
+		 //Starting Conversion
 		ADC1->CR |= (1 << 2);
 	}
 }
 
-// GPIO
+// GPIO for ICOC
 void init_GPIO_ICOC(void){
 	RCC_AHB2ENR |= 1;			// Bus enable for GPIO A (From PS)
 
@@ -377,9 +378,8 @@ void disable_clocks(void) {
 	    }
 
 }
-
 void USART2_IRQHandler(void) {
-	if ((USART2->ISR & (1 << 7)) && (tx_head != tx_tail)) {
+	if ((USART2->ISR & (1 << 7)) && (tx_head != tx_tail)) { // checks if TXE flag is set and there is data to send
 		USART2->TDR = tx_buffer[tx_tail++];
 
 		        // If newline '\n' is sent, reset the buffer
@@ -433,9 +433,9 @@ void USART2_IRQHandler(void) {
 			uart_send_string("ON\r\n");
 
 
-			TIM2->CCR3 = 10;
-			TIM15->CCR2=0;
-			TIM15->DIER |= (0b11);
+			TIM2->CCR3 = 10; // Set servo to 0 degrees
+			TIM15->CCR2=0; // Set buzzer to 0
+			TIM15->DIER |= (0b11); // Enable interrupts for input capture and timer overflow
 
 
 			enable_clocks();
@@ -487,7 +487,7 @@ void init_TIMER2_SERVO() {
 
     TIM2->CR1 |= 0x01; // Start timer2
 }
-
+// from ps 7
 void init_TIMER6_CASTING(void)
 {
 	 RCC_APB1ENR1 |= 1 << 4; //TIM6x_CLK is enabled, running at 4MHz
@@ -558,8 +558,8 @@ void vibration_handler(void){
 
 // Main
 int main(void){
-	init_GPIO_ICOC();			// Initialize GPIO
-	init_TIMER15_ICOC();			// Initialize Timer
+	init_GPIO_ICOC();
+	init_TIMER15_ICOC();
 
 	init_GPIO_SERVO();
 	init_TIMER2_SERVO();
@@ -573,7 +573,7 @@ int main(void){
 	init_ADC();
 	init_TIMER7_ADC();
 
-	init_INTERRUPT();// Initialize Interrupts
+	init_INTERRUPT();
 
 	while(1){
 		__asm volatile("wfi");		// Wait for interrupt (low-power mode) (From PS)
